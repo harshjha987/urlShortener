@@ -1,5 +1,7 @@
 const express = require("express");
 const urlRoute = require("./routes/url.routes")
+
+const userRoute = require("./routes/user.routes")
 const app = express();
 const port = 8001;
 const dotenv = require("dotenv");
@@ -15,6 +17,8 @@ app.get("/",(req,res)=>{
 })
 
 app.use('/url',urlRoute);
+
+app.use("/users",userRoute);
 
 app.get("/:shortId",async(req,res)=>{
     const shortId = req.params.shortId;

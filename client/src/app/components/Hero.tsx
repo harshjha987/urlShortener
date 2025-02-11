@@ -35,13 +35,14 @@ function Hero() {
       <Button
     borderRadius="1.75rem"
     className="bg-white dark:bg-slate-900 text-black dark:text-white border-neutral-200
-     mx-auto dark:border-slate-800 z-10 "
+     mx-auto dark:border-slate-800 z-10 text-lg "
   >
-    Explore now.
+    Get Started.
   </Button>
   </div>
+ 
     </HeroHighlight>
-    
+   
    
   </div>
   );

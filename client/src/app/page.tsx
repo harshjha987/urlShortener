@@ -1,3 +1,6 @@
+import CTA from "./components/CTA";
+import { FeaturesSectionDemo } from "./components/Features";
+import Footer from "./components/Footer";
 import Hero from "./components/Hero";
 
 
@@ -7,6 +10,9 @@ export default function Home() {
     antialiased bg-grid-white/[0.02] ">
    
     <Hero />
+    <FeaturesSectionDemo />
+    <CTA />
+    <Footer />
     </main>
   )
 }

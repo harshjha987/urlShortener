@@ -12,7 +12,7 @@ function Navbar({ className }: { className?: string }){
     const [open,setOpen] = useState(false);
     return (
         <div
-          className={cn("fixed top-6 inset-x-0 max-w-full mx-auto z-50   justify-between ", className)}
+          className={cn("fixed top-6 inset-x-0 max-w-5xl mx-auto z-50   justify-between ", className)}
         >
             
             <Menu setActive={setActive}>
@@ -21,14 +21,14 @@ function Navbar({ className }: { className?: string }){
                    <p> Shortrix</p> 
                 </div>
             
-            <div className="hidden md:flex items-center space-x-6">
-                <Link href= "/" >
+            <div className="hidden md:flex items-center space-x-10">
+                <HoveredLink href= "/" >
         <MenuItem setActive={setActive} active={active} item="Home">
           
         </MenuItem>
-        </Link>
+        </HoveredLink>
         
-        <MenuItem setActive={setActive} active={active} item="Service">
+        <MenuItem setActive={setActive} active={active} item="Features">
          
         </MenuItem>
         <MenuItem setActive={setActive} active={active} item="Contact us">
@@ -36,7 +36,7 @@ function Navbar({ className }: { className?: string }){
         </MenuItem>
         </div>
         <div className=" hidden md:flex items-center">
-        <Link href={'/'} className="rounded-lg  px-4  bg-blue-600">
+        <Link href={'/'} className="font-semibold  px-4 py-1 text-base bg-blue-600">
         <MenuItem setActive={setActive} active={active} item="Sign Up">
           
         </MenuItem>
@@ -51,7 +51,7 @@ function Navbar({ className }: { className?: string }){
           <Link href="/">
             <MenuItem setActive={setActive} active={active} item="Home" />
           </Link>
-          <MenuItem setActive={setActive} active={active} item="Service" />
+          <MenuItem setActive={setActive} active={active} item="Features" />
           <MenuItem setActive={setActive} active={active} item="Contact us" />
           <Link href="/" className="rounded-lg px-4 py-2 bg-blue-600 text-white">
             <MenuItem setActive={setActive} active={active} item="Sign Up" />

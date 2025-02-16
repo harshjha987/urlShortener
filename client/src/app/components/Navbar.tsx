@@ -16,10 +16,14 @@ function Navbar({ className }: { className?: string }){
         >
             
             <Menu setActive={setActive}>
+            <Link href={'/'}>
                 <div className="flex font-bold ml-5 items-center">
+               
                     <Image src = {logo} alt="/logo" className="h-6 w-6 mr-2"/>
                    <p> Shortrix</p> 
+                  
                 </div>
+                </Link>
             
             <div className="hidden md:flex items-center space-x-10">
                 <HoveredLink href= "/" >

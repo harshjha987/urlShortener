@@ -5,6 +5,8 @@ const userRoute = require("./routes/user.routes")
 const app = express();
 const port = 8001;
 const dotenv = require("dotenv");
+const cors = require("cors");
+const requestIp = require("request-ip");
 const {URL} = require("./models/url.models")
 
 dotenv.config({
@@ -12,6 +14,7 @@ dotenv.config({
 })
 const {connectDb} = require("./connectDb")
 app.use(express.json());
+app.use(cors({ origin: "http://localhost:3000" }));
 app.get("/",(req,res)=>{
     res.send("Server is running");
 })
@@ -20,20 +23,36 @@ app.use('/url',urlRoute);
 
 app.use("/users",userRoute);
 
-app.get("/:shortId",async(req,res)=>{
-    const shortId = req.params.shortId;
-    const entry = await URL.findOneAndUpdate({
-        shortId
-    },
-    {
-        $push : {
-            visitedHistory :{
-                timestamp : Date.now()
-            }
+app.get("/:shortId", async (req, res) => {
+    try {
+        const shortId = req.params.shortId;
+        const ip = requestIp.getClientIp(req) || "Unknown IP";
+        const referrer = req.get("Referer") || "Direct";
+
+        const entry = await URL.findOneAndUpdate(
+            { shortId },
+            {
+                $push: {
+                    visitedHistory: {
+                        timestamp: Date.now(),
+                        ip: ip,
+                        referrer: referrer
+                    }
+                }
+            },
+            { new: true }
+        );
+
+        if (!entry) {
+            return res.status(404).json({ error: "Short URL not found" });
         }
-    })
-    res.redirect(entry?.redirectUrl)
-})
+
+        res.redirect(entry.redirectUrl);
+    } catch (error) {
+        console.error("Error in redirect:", error);
+        res.status(500).json({ error: "Internal Server Error" });
+    }
+});
 
 connectDb()
 .then(()=>{

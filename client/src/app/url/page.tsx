@@ -1,0 +1,98 @@
+"use client";
+
+import { motion } from "framer-motion";
+import React, { useState,useEffect } from "react";
+import { AuroraBackground } from "../components/ui/aurora-background"
+import axios from "axios";
+import {QRCodeSVG} from 'qrcode.react';
+
+function page() {
+  const [inputUrl, setInputUrl] = useState("");
+  const [shortUrl, setShortUrl] = useState(localStorage.getItem("shortUrl") || "");
+  const [error, setError] = useState("");
+  const [analytics, setAnalytics] = useState<{ totalClicks: number; locations: string[]; referrers: string[] } | null>(
+    JSON.parse(localStorage.getItem("analytics") || "null")
+  );
+
+  useEffect(() => {
+    if (shortUrl) {
+      fetchAnalytics(shortUrl.split("/").pop()!); // Extract shortId from the URL
+    }
+  }, [shortUrl]);
+const handleShorten = async()=>{
+    try {
+      setError("")
+      const response = await axios.post<{ shortId: string }>("http://localhost:8001/url", {
+        URL: inputUrl,
+      });
+        console.log(response.data);
+        const shortId = response.data.shortId; 
+        if(shortId){
+          setShortUrl(`http://localhost:8001/${shortId}`);
+          localStorage.setItem("shortUrl",`http://localhost:8001/${shortId}`);
+          fetchAnalytics(shortId);
+        }
+        else{
+          setError("Invalid response from servere")
+        }
+       
+      
+    } catch (error) {
+        setError("Failed to shorten URL. Please try again.");
+    }
+}
+const fetchAnalytics = async (shortId: string) => {
+  try {
+    const response = await axios.get<{ totalClicks: number; locations: string[]; referrers: string[] }>(
+      `http://localhost:8001/url/analytics/${shortId}`
+    );
+      setAnalytics(response.data);
+      localStorage.setItem("analytics", JSON.stringify(response.data));
+  } catch (err) {
+      console.error("Error fetching analytics:", err);
+  }
+};
+
+  return (
+    <AuroraBackground>
+      <motion.div
+        initial={{ opacity: 0.0, y: 40 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        transition={{
+          delay: 0.3,
+          duration: 0.8,
+          ease: "easeInOut",
+        }}
+        className="relative flex flex-col gap-4 items-center justify-center px-4"
+      >
+        <div className="text-xl md:text-2xl font-bold dark:text-white text-center">
+            Instant Link Shortner
+            <p>Enter your URL.</p>
+          <input type="text" value={inputUrl} placeholder="Enter your URL"
+          onChange={(e)=> setInputUrl(e.target.value)} className="text-black"/>
+        </div>
+        
+        <button className="bg-black dark:bg-white rounded-full w-fit text-white dark:text-black px-4 py-2"
+        onClick={handleShorten}>
+          Shorten now
+        </button>
+        {error && <p className="text-red-300 mt-2">{error}</p>}
+        {shortUrl && (
+        <div className="mt-4 p-4 bg-white shadow-md rounded">
+          <p>Shortened URL: <a href={shortUrl} className="text-blue-500" target="_blank">{shortUrl}</a></p>
+          <QRCodeSVG value={shortUrl} className="mt-2" />
+        </div>
+      )}
+      {analytics && (
+  <div className="mt-6 p-4 bg-white shadow-md rounded">
+    <h2 className="text-xl font-bold">Analytics</h2>
+    <p>Clicks: {analytics.totalClicks}</p>
+    <p>Referrers: {analytics.referrers?.join(", ") || "None"}</p>
+    <p>Locations: {analytics.locations?.join(", ") || "Unknown"}</p>
+  </div>
+)}
+      </motion.div>
+    </AuroraBackground>
+  );
+}
+export default page

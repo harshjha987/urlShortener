@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { Highlight,HeroHighlight } from "./ui/hero-highlight";
 
 import { Button } from "./ui/moving-border";
+import Link from "next/link";
 function Hero() {
   return (
     <div className="h-auto md:h-[40rem] w-full rounded-md flex flex-col 
@@ -32,6 +33,7 @@ function Hero() {
         </Highlight>
       </motion.h1>
       <div className="z-10 text-center mt-6">
+        <Link href= "/url">
       <Button
     borderRadius="1.75rem"
     className="bg-white dark:bg-slate-900 text-black dark:text-white border-neutral-200
@@ -39,6 +41,7 @@ function Hero() {
   >
     Get Started.
   </Button>
+  </Link>
   </div>
  
     </HeroHighlight>

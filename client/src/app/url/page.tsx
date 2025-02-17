@@ -8,29 +8,38 @@ import {QRCodeSVG} from 'qrcode.react';
 
 function page() {
   const [inputUrl, setInputUrl] = useState("");
-  const [shortUrl, setShortUrl] = useState(localStorage.getItem("shortUrl") || "");
+  const [shortUrl, setShortUrl] = useState("");
   const [error, setError] = useState("");
-  const [analytics, setAnalytics] = useState<{ totalClicks: number; locations: string[]; referrers: string[] } | null>(
-    JSON.parse(localStorage.getItem("analytics") || "null")
-  );
+  const [redirectUrl, setRedirectUrl] = useState<{ url: string } | null>(null);
+
+  const [analytics, setAnalytics] = useState<{ totalClicks: number; locations: string[]; referrers: string[] } | null>(null);
 
   useEffect(() => {
-    if (shortUrl) {
-      fetchAnalytics(shortUrl.split("/").pop()!); // Extract shortId from the URL
+    if (typeof window !== "undefined") {
+      const savedShortUrl = localStorage.getItem("shortUrl");
+      if (savedShortUrl) {
+        setShortUrl(savedShortUrl);
+        fetchAnalytics(savedShortUrl.split("/").pop() || "");
+        getOriginalUrl(savedShortUrl.split("/").pop() || "")
+      }
     }
-  }, [shortUrl]);
+  }, []);
 const handleShorten = async()=>{
     try {
       setError("")
       const response = await axios.post<{ shortId: string }>("http://localhost:8001/url", {
         URL: inputUrl,
       });
+      
         console.log(response.data);
         const shortId = response.data.shortId; 
         if(shortId){
           setShortUrl(`http://localhost:8001/${shortId}`);
-          localStorage.setItem("shortUrl",`http://localhost:8001/${shortId}`);
+          if (typeof window !== "undefined") {
+            localStorage.setItem("shortUrl", `http://localhost:8001/${shortId}`);
+          }
           fetchAnalytics(shortId);
+          getOriginalUrl(shortId)
         }
         else{
           setError("Invalid response from servere")
@@ -52,6 +61,25 @@ const fetchAnalytics = async (shortId: string) => {
       console.error("Error fetching analytics:", err);
   }
 };
+
+const getOriginalUrl = async (shortId: string) => {
+  try {
+    const response = await axios.get<{ originalUrl: string }>(
+      `http://localhost:8001/${shortId}`,
+      { headers: { "X-Requested-With": "XMLHttpRequest" } }
+    );
+
+    if (response.data.originalUrl) {
+      setRedirectUrl({ url: response.data.originalUrl });
+      localStorage.setItem("Original Link", JSON.stringify(response.data.originalUrl));
+      console.log("Original URL:", response.data.originalUrl);
+    }
+  } catch (error) {
+    console.error("Error fetching original URL:", error);
+  }
+};
+
+
 
   return (
     <AuroraBackground>
@@ -91,6 +119,17 @@ const fetchAnalytics = async (shortId: string) => {
     <p>Locations: {analytics.locations?.join(", ") || "Unknown"}</p>
   </div>
 )}
+{redirectUrl && (
+  <div className="mt-6 p-4 bg-white shadow-md rounded">
+    <h2 className="text-xl font-bold">Original URL</h2>
+    <p>
+      <a href={redirectUrl.url} target="_blank" rel="noopener noreferrer" className="text-blue-500">
+        {redirectUrl.url}
+      </a>
+    </p>
+  </div>
+)}
+
       </motion.div>
     </AuroraBackground>
   );

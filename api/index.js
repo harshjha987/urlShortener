@@ -14,7 +14,7 @@ dotenv.config({
 })
 const {connectDb} = require("./connectDb")
 app.use(express.json());
-app.use(cors({ origin: "http://localhost:3000" }));
+app.use(cors());
 app.get("/",(req,res)=>{
     res.send("Server is running");
 })
@@ -46,7 +46,12 @@ app.get("/:shortId", async (req, res) => {
         if (!entry) {
             return res.status(404).json({ error: "Short URL not found" });
         }
-
+        if (req.headers["x-requested-with"] === "XMLHttpRequest") {
+            return res.json({ originalUrl: entry.redirectUrl, shortId });
+        }
+        
+        
+        console.log(entry.redirectUrl)
         res.redirect(entry.redirectUrl);
     } catch (error) {
         console.error("Error in redirect:", error);

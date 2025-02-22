@@ -1,4 +1,5 @@
 const { hashPassword,validatePassword } = require("../auth/passwordUtils");
+const { generateAccessAndRefreshToken } = require("../auth/tokenUtils");
 const { User } = require("../models/user.models");
 
 
@@ -56,12 +57,46 @@ const userSignin = async(req,res)=>{
                 return res.status(401).json({Error : "Wrong password"});
     
             }
-            const loggedinUser = await User.findById(user._id).select("-password")
-            return res.status(200).json({Message: "User loggedin Succesfully", User : loggedinUser})
+            const {accessToken, refreshToken} = await generateAccessAndRefreshToken(user._id)
+            const loggedinUser = await User.findById(user._id).select("-password -refreshToken")
+            const options = {
+                httpOnly : true, //only server can modify
+                secure : true
+            }
+            return res
+            .status(200)
+            .cookie("accessToken",accessToken,options)
+            .cookie("refreshToken",refreshToken,options)
+            .json({Message: "User loggedin Succesfully", User : loggedinUser,accessToken,refreshToken})
         } catch (error) {
             return res.status(500).json({error : "error.message"});
         }
 
 }
 
-module.exports = {userSignup , userSignin};
+const userLogOut = async(req,res)=>{
+    console.log(req.user)
+    await User.findByIdAndUpdate(
+        req.user._id,
+        {
+            $unset : {
+                refreshToken : 1
+            }
+        },
+        {
+            new : true
+        }
+    )
+   
+    const options = {
+        httpOnly : true,
+        secure : true
+    }
+    return res.status(200)
+    .clearCookie("accessToken",options)
+    .clearCookie("refreshToken",options)
+    .json({message : "User logged out succesfully"})
+}
+
+
+module.exports = {userSignup , userSignin,userLogOut};

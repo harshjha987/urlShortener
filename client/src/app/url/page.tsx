@@ -5,80 +5,85 @@ import React, { useState,useEffect } from "react";
 import { AuroraBackground } from "../components/ui/aurora-background"
 import axios from "axios";
 import {QRCodeSVG} from 'qrcode.react';
-
+const api_url = process.env.NEXT_PUBLIC_BASE_URL; // ✅ Correct environment variable usage
+console.log(api_url)
 function page() {
   const [inputUrl, setInputUrl] = useState("");
   const [shortUrl, setShortUrl] = useState("");
   const [error, setError] = useState("");
   const [redirectUrl, setRedirectUrl] = useState<{ url: string } | null>(null);
-
   const [analytics, setAnalytics] = useState<{ totalClicks: number; locations: string[]; referrers: string[] } | null>(null);
 
   useEffect(() => {
     if (typeof window !== "undefined") {
       const savedShortUrl = localStorage.getItem("shortUrl");
-      if (savedShortUrl) {
-        setShortUrl(savedShortUrl);
-        fetchAnalytics(savedShortUrl.split("/").pop() || "");
-        getOriginalUrl(savedShortUrl.split("/").pop() || "")
+      const savedShortId = savedShortUrl?.split("/").pop();
+
+      if (savedShortId) {
+        fetchAnalytics(savedShortId);
+        getOriginalUrl(savedShortId);
       }
     }
   }, []);
-const handleShorten = async()=>{
+
+  const handleShorten = async () => {
     try {
-      setError("")
-      const response = await axios.post<{ shortId: string }>("http://localhost:8001/url", {
+      setError("");
+
+      const response = await axios.post<{ shortId: string }>(`${api_url}/url`, {
         URL: inputUrl,
       });
-      
-        console.log(response.data);
-        const shortId = response.data.shortId; 
-        if(shortId){
-          setShortUrl(`http://localhost:8001/${shortId}`);
-          if (typeof window !== "undefined") {
-            localStorage.setItem("shortUrl", `http://localhost:8001/${shortId}`);
-          }
-          fetchAnalytics(shortId);
-          getOriginalUrl(shortId)
+
+      const shortId = response.data?.shortId;
+      if (shortId) {
+        const shortUrl = `${api_url}/${shortId}`;
+        setShortUrl(shortUrl);
+
+        if (typeof window !== "undefined") {
+          localStorage.setItem("shortUrl", shortUrl);
         }
-        else{
-          setError("Invalid response from servere")
-        }
-       
-      
+
+        // Fetch analytics and original URL in parallel
+        await Promise.all([fetchAnalytics(shortId), getOriginalUrl(shortId)]);
+      } else {
+        setError("Invalid response from server");
+      }
     } catch (error) {
-        setError("Failed to shorten URL. Please try again.");
+      console.error("Error shortening URL:", error);
+      setError( "Failed to shorten URL. Please try again.");
     }
-}
-const fetchAnalytics = async (shortId: string) => {
-  try {
-    const response = await axios.get<{ totalClicks: number; locations: string[]; referrers: string[] }>(
-      `http://localhost:8001/url/analytics/${shortId}`
-    );
+  };
+
+  const fetchAnalytics = async (shortId: string) => {
+    try {
+      const response = await axios.get<{ totalClicks: number; locations: string[]; referrers: string[] }>(
+        `${api_url}/url/analytics/${shortId}`
+      );
       setAnalytics(response.data);
       localStorage.setItem("analytics", JSON.stringify(response.data));
-  } catch (err) {
+    } catch (err) {
       console.error("Error fetching analytics:", err);
-  }
-};
-
-const getOriginalUrl = async (shortId: string) => {
-  try {
-    const response = await axios.get<{ originalUrl: string }>(
-      `http://localhost:8001/${shortId}`,
-      { headers: { "X-Requested-With": "XMLHttpRequest" } }
-    );
-
-    if (response.data.originalUrl) {
-      setRedirectUrl({ url: response.data.originalUrl });
-      localStorage.setItem("Original Link", JSON.stringify(response.data.originalUrl));
-      console.log("Original URL:", response.data.originalUrl);
     }
-  } catch (error) {
-    console.error("Error fetching original URL:", error);
-  }
-};
+  };
 
+  const getOriginalUrl = async (shortId: string) => {
+    try {
+      const response = await axios.get<{ originalUrl: string }>(
+        `${api_url}/${shortId}`,
+        { headers: { "X-Requested-With": "XMLHttpRequest" } }
+      );
+
+      if (response.data.originalUrl) {
+        setRedirectUrl({ url: response.data.originalUrl });
+        localStorage.setItem("Original Link", JSON.stringify(response.data.originalUrl));
+        console.log("Original URL:", response.data.originalUrl);
+      }
+    } catch (error) {
+      console.error("Error fetching original URL:", error);
+    }
+  };
+
+ 
 
 
   return (

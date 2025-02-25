@@ -17,30 +17,7 @@ function Page() {
   const [analytics, setAnalytics] = useState<{ totalClicks: number; locations: string[]; referrers: string[] } | null>(null);
   const [isAuthenticated, setAuthenticated] = useState(false);
   const router = useRouter();
-  const[loading,setLoading]= useState(true)
-
-  useEffect(() => {
-    const checkAuth = async()=>{
-    try {
-      
-        const res = await axios.get(`${api_url}/auth/check`,{withCredentials : true})
-        if (res.data.isAuthenticated) {
-          setAuthenticated(true);
-        } else {
-          router.push("/signup");
-        }
-      
-    } catch (error) {
-      setAuthenticated(false)
-      router.push("/signup")
-    }  finally {
-      setLoading(false); // Stop loading after check
-    }
-  }
-  checkAuth()
   
-  }, [router])
-
   useEffect(() => {
     if (typeof window !== "undefined") {
       const savedShortUrl = localStorage.getItem("shortUrl");
@@ -115,9 +92,7 @@ function Page() {
       console.error("Error fetching original URL:", error);
     }
   };
-  if (loading) {
-    return <div className="min-h-screen flex items-center justify-center">Loading...</div>; // Show loading spinner
-  }
+  
  
 
 

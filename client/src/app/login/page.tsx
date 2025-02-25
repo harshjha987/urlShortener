@@ -24,21 +24,21 @@ const[error,setError] = useState("");
 const router = useRouter();
 
 
-// useEffect(()=>{
-//     const checkAuth = async()=>{
-//         try {
-//             const res = await axios.get(`${api_url}/auth/check`,{withCredentials : true})
-//             if(res.data.isAuthenticated){
-//                 router.push("/url")
-//             }
-//         } catch (error) {
-//             console.log("Not authenticated")
-//         }
-//     }
-//     checkAuth()
+useEffect(()=>{
+    const checkAuth = async()=>{
+        try {
+            const res = await axios.get(`${api_url}/auth/check`,{withCredentials : true})
+            if(res.data.authenticated){
+                router.push("/url")
+            }
+        } catch (error) {
+            console.log("Not authenticated")
+        }
+    }
+    checkAuth()
 
 
-// },[router])
+},[router])
 
 const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
   e.preventDefault();

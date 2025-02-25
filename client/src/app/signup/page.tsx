@@ -30,8 +30,27 @@ interface SignupData {
     password: "",
   });
 
+  const[isLoading,setLoading] = useState(true)
+
   const [error, setError] = useState<string | null>(null);
   const router = useRouter()
+  useEffect(()=>{
+    const checkAuth = async()=>{
+        try {
+            const res = await axios.get(`${api_url}/auth/check`,{withCredentials : true})
+            if(res.data.authenticated){
+                router.push("/url")
+            }
+        } catch (error) {
+            console.log("Not authenticated")
+        }finally{
+          setLoading(false);
+        }
+    }
+    checkAuth()
+
+
+},[router])
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
@@ -59,6 +78,9 @@ interface SignupData {
     }
     console.log("Form submitted");
   };
+  if (isLoading) {
+    return <div className="min-h-screen flex items-center justify-center">Loading...</div>; // Show loading spinner
+  }
   return (
     <div className="max-w-md w-full mt-32 mx-auto rounded-none md:rounded-2xl p-4 md:p-8 shadow-input bg-white dark:bg-black">
       <h2 className="font-bold text-xl text-neutral-800 dark:text-neutral-200">

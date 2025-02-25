@@ -33,7 +33,7 @@ function Hero() {
         </Highlight>
       </motion.h1>
       <div className="z-10 text-center mt-6">
-        <Link href= "/url">
+        <Link href= "/signup">
       <Button
     borderRadius="1.75rem"
     className="bg-white dark:bg-slate-900 text-black dark:text-white border-neutral-200

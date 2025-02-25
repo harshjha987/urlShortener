@@ -10,7 +10,7 @@ import {
 } from "@tabler/icons-react";
 import Link from "next/link";
 // import { Target } from "lucide-react";
-import axios from "axios";
+import axios,{AxiosError} from "axios";
 import { useRouter } from "next/navigation";
 const api_url = process.env.NEXT_PUBLIC_BASE_URL;
 
@@ -24,36 +24,51 @@ const[error,setError] = useState("");
 const router = useRouter();
 
 
-useEffect(()=>{
-    const checkAuth = async()=>{
-        try {
-            const res = await axios.get(`${api_url}/auth/check`,{withCredentials : true})
-            if(res.data.isAuthenticated){
-                router.push("/url")
-            }
-        } catch (error) {
-            console.log("Not authenticated")
-        }
-    }
-    checkAuth()
-},[router])
+// useEffect(()=>{
+//     const checkAuth = async()=>{
+//         try {
+//             const res = await axios.get(`${api_url}/auth/check`,{withCredentials : true})
+//             if(res.data.isAuthenticated){
+//                 router.push("/url")
+//             }
+//         } catch (error) {
+//             console.log("Not authenticated")
+//         }
+//     }
+//     checkAuth()
 
-const handleSubmit =async(e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    try {
-        const res = await axios.post(`${api_url}/users/signin`,{email
-            ,password},{withCredentials : true}
-        )
-        if(res.status === 200){
-            router.push("/url")
-        }
-    } catch (error) {
-        setError("Invalid email or pasword");
-        
+
+// },[router])
+
+const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  e.preventDefault();
+  setError("")
+  const currentEmail = email;
+  const currentPassword = password;
+
+  try {
+    const res = await axios.post(
+      `${api_url}/users/signin`,
+      { email: currentEmail, password: currentPassword },
+      { withCredentials: true }
+    );
+    router.push("/url");
+  } catch (err: unknown) {
+    const error = err as AxiosError<{ error: string }>;
+
+    if (error.response) {
+      setError(error.response?.data?.error || "Invalid email or password");
+    } else if (error.request) {
+      setError("No response from server. Please check your network.");
+    } else {
+      setError("An unexpected error occurred.");
     }
 
-    console.log("Form submitted");
-  };
+    console.error("Login error:", error.message, error.response?.data);
+  }
+
+  console.log("Form submitted");
+};
 
   return (
     <div className="max-w-md w-full mt-32 mx-auto rounded-none md:rounded-2xl p-4 md:p-8 shadow-input bg-white dark:bg-black">
@@ -71,12 +86,12 @@ const handleSubmit =async(e: React.FormEvent<HTMLFormElement>) => {
         <LabelInputContainer className="mb-4">
           <Label htmlFor="email">Email Address</Label>
           <Input id="email" placeholder="projectmayhem@fc.com" type="email" value={email}
-          onChange={(e)=> setEmail(e.target.value)} />
+          onChange={(e)=> setEmail(e.target.value)} name="email" />
         </LabelInputContainer>
         <LabelInputContainer className="mb-4">
           <Label htmlFor="password">Password</Label>
           <Input id="password" placeholder="••••••••" type="password" value={password}
-          onChange={(e)=> setPassword(e.target.value)} />
+          onChange={(e)=> setPassword(e.target.value)} name="password" />
         </LabelInputContainer>
         
 

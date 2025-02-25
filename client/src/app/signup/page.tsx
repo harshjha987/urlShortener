@@ -41,7 +41,7 @@ interface SignupData {
     setError(null)
     try {
       const res = await axios.post(`${api_url}/users/signup`,formData)
-      if(res.status === 200){
+      if(res.status >= 200 && res.status < 300){
         router.push("/login")
       }
     } catch (err : unknown) {
@@ -72,18 +72,18 @@ interface SignupData {
           
           <LabelInputContainer>
             <Label htmlFor="lastname">Username</Label>
-            <Input id="lastname" placeholder="Enter your Username..." type="text"
+            <Input id="lastname" placeholder="Enter your Username..." type="text" name="username"
              onChange={handleChange} />
           </LabelInputContainer>
         </div>
         <LabelInputContainer className="mb-4">
           <Label htmlFor="email">Email Address</Label>
-          <Input id="email" placeholder="projectmayhem@fc.com" type="email"
+          <Input id="email" placeholder="projectmayhem@fc.com" type="email" name="email"
            onChange={handleChange} />
         </LabelInputContainer>
         <LabelInputContainer className="mb-4">
           <Label htmlFor="password">Password</Label>
-          <Input id="password" placeholder="••••••••" type="password"
+          <Input id="password" placeholder="••••••••" type="password" name="password"
            onChange={handleChange} />
         </LabelInputContainer>
         

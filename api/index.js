@@ -1,7 +1,7 @@
 const express = require("express");
-const urlRoute = require("./routes/url.routes")
+const urlRoute = require("./routes/url.routes.js")
 
-const userRoute = require("./routes/user.routes")
+const userRoute = require("./routes/user.routes.js")
 const app = express();
 const port = 8001;
 const dotenv = require("dotenv");
@@ -9,7 +9,8 @@ const cors = require("cors");
 const requestIp = require("request-ip");
 const {URL} = require("./models/url.models")
 
-const authRoute = require("./routes/auth.routes")
+const authRoute = require("./routes/auth.routes.js")
+const cookieParser = require('cookie-parser')
 
 dotenv.config({
     path : './.env'
@@ -18,12 +19,13 @@ const {connectDb} = require("./connectDb");
 const { verifyJwt } = require("./middlewares/auth.middlewares");
 
 app.use(express.json());
-app.use(
-    cors({
-      origin: "http://localhost:3000", 
-      credentials: true, // Allow credentials (cookies, auth headers)
-    })
-  );
+app.use(cookieParser())
+app.use(cors({
+    origin: ["http://localhost:3000", "https://shortrix.vercel.app"], // Update accordingly
+    methods: ["POST", "GET"],
+    credentials: true
+  }));
+  
 app.get("/",(req,res)=>{
     res.send("Server is running");
 })

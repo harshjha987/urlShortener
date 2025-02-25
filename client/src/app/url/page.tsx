@@ -5,14 +5,34 @@ import React, { useState,useEffect } from "react";
 import { AuroraBackground } from "../components/ui/aurora-background"
 import axios from "axios";
 import {QRCodeSVG} from 'qrcode.react';
-const api_url = process.env.NEXT_PUBLIC_BASE_URL; // ✅ Correct environment variable usage
+// import { useRouter } from "next/router";
+const api_url = process.env.NEXT_PUBLIC_BASE_URL;
 console.log(api_url)
-function page() {
+
+function Page() {
   const [inputUrl, setInputUrl] = useState("");
   const [shortUrl, setShortUrl] = useState("");
   const [error, setError] = useState("");
   const [redirectUrl, setRedirectUrl] = useState<{ url: string } | null>(null);
   const [analytics, setAnalytics] = useState<{ totalClicks: number; locations: string[]; referrers: string[] } | null>(null);
+  const [isAuthenticated, setAuthenticated] = useState(false);
+  // const router = useRouter()
+
+  useEffect(() => {
+    const checkAuth = async()=>{
+    try {
+      
+        const res = await axios.get("http://localhost:8001/auth/check",{withCredentials : true})
+        console.log(res.data)
+        setAuthenticated(res.data.isAuthenticated)
+      
+    } catch (error) {
+      setAuthenticated(false)
+    }
+  }
+  checkAuth()
+  
+  }, [])
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -27,12 +47,18 @@ function page() {
   }, []);
 
   const handleShorten = async () => {
+    if(!isAuthenticated){
+      // router.push('/')
+      console.log("User not authenticated")
+      alert("Please login first")
+      return
+    }
     try {
       setError("");
 
       const response = await axios.post<{ shortId: string }>(`${api_url}/url`, {
-        URL: inputUrl,
-      });
+        URL: inputUrl, 
+      },{ withCredentials: true });
 
       const shortId = response.data?.shortId;
       if (shortId) {
@@ -57,7 +83,7 @@ function page() {
   const fetchAnalytics = async (shortId: string) => {
     try {
       const response = await axios.get<{ totalClicks: number; locations: string[]; referrers: string[] }>(
-        `${api_url}/url/analytics/${shortId}`
+        `${api_url}/url/analytics/${shortId}`,{ withCredentials: true }
       );
       setAnalytics(response.data);
       localStorage.setItem("analytics", JSON.stringify(response.data));
@@ -139,4 +165,4 @@ function page() {
     </AuroraBackground>
   );
 }
-export default page
+export default Page

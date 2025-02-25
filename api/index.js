@@ -9,19 +9,29 @@ const cors = require("cors");
 const requestIp = require("request-ip");
 const {URL} = require("./models/url.models")
 
+const authRoute = require("./routes/auth.routes")
+
 dotenv.config({
     path : './.env'
 })
-const {connectDb} = require("./connectDb")
+const {connectDb} = require("./connectDb");
+const { verifyJwt } = require("./middlewares/auth.middlewares");
+
 app.use(express.json());
-app.use(cors());
+app.use(
+    cors({
+      origin: "http://localhost:3000", 
+      credentials: true, // Allow credentials (cookies, auth headers)
+    })
+  );
 app.get("/",(req,res)=>{
     res.send("Server is running");
 })
 
-app.use('/url',urlRoute);
+app.use('/url',verifyJwt,urlRoute);
 
 app.use("/users",userRoute);
+app.use("/auth",authRoute)
 
 app.get("/:shortId", async (req, res) => {
     try {

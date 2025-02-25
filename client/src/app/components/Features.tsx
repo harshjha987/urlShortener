@@ -5,7 +5,7 @@ import {
   IconCloud,
   IconCurrencyDollar,
   IconEaseInOut,
-  IconHeart,
+  
   IconHelp,
   IconRouteAltLeft,
   IconTerminal2,

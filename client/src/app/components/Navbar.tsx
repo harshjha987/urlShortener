@@ -1,11 +1,11 @@
 "use client";
 import React, { useState } from "react";
-import { HoveredLink, Menu, MenuItem, ProductItem } from "./ui/navbar-menu";
+import { HoveredLink, Menu, MenuItem } from "./ui/navbar-menu";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 import logo from "../images/logo-url.png"
 import Image from "next/image";
-import { AlignJustify,X } from 'lucide-react';
+import { AlignJustify } from 'lucide-react';
 
 function Navbar({ className }: { className?: string }){
     const [active, setActive] = useState<string | null>(null);

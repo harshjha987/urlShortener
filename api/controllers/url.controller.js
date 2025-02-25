@@ -5,6 +5,7 @@ const {URL} = require("../models/url.models")
 const handleGenerateNewUrl = async (req, res) => {
     try {
         const body = req.body;
+        const userId = req.user?._id
 
         if (!body.URL) return res.status(400).json({ error: "Url is required" });
 
@@ -12,7 +13,8 @@ const handleGenerateNewUrl = async (req, res) => {
         await URL.create({
             shortId: shortId,
             redirectUrl: body.URL,
-            visitedHistory: []
+            visitedHistory: [],
+            userId
         });
 
         console.log("Generated Short ID:", shortId);
@@ -20,7 +22,7 @@ const handleGenerateNewUrl = async (req, res) => {
         return res.json({ shortId }); // ✅ Return only shortId, not shortUrl
     } catch (error) {
         console.error("Error generating short URL:", error);
-        return res.status(500).json({ error: "Internal Server Error" });
+        return res.status(500).json({ error: error?.message || "Internal Server Error" });
     }
 };
 

@@ -69,7 +69,7 @@ const userSignin = async(req,res)=>{
             .cookie("refreshToken",refreshToken,options)
             .json({Message: "User loggedin Succesfully", User : loggedinUser,accessToken,refreshToken})
         } catch (error) {
-            return res.status(500).json({error : "error.message"});
+            return res.status(500).json({error : error?.message});
         }
 
 }
@@ -97,6 +97,22 @@ const userLogOut = async(req,res)=>{
     .clearCookie("refreshToken",options)
     .json({message : "User logged out succesfully"})
 }
+const changePassword = async(req,res)=>{
+    const{oldPassword,newPassword} = req.body;
+    const user = await User.findById(req.user?._id);
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
 
+    const isPasswordCorrect = await validatePassword(oldPassword,user.password)
+    if(!isPasswordCorrect){
+        return res.status(404).json({error :  "Invalid Password"})
+    }
+    user.password = newPassword
+    await user.save({validateBeforeSave : false})
+    return res
+    .status(200)
+    .json({message: "Password changed succesfully"})
+}
 
-module.exports = {userSignup , userSignin,userLogOut};
+module.exports = {userSignup , userSignin,userLogOut,changePassword};

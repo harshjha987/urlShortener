@@ -108,7 +108,7 @@ const changePassword = async(req,res)=>{
     if(!isPasswordCorrect){
         return res.status(404).json({error :  "Invalid Password"})
     }
-    user.password = newPassword
+    user.password = hashPassword(newPassword,10)
     await user.save({validateBeforeSave : false})
     return res
     .status(200)

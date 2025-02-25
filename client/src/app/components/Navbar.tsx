@@ -40,7 +40,7 @@ function Navbar({ className }: { className?: string }){
         </MenuItem>
         </div>
         <div className=" hidden md:flex items-center">
-        <Link href={'/'} className="font-semibold  px-4 py-1 text-base bg-blue-600">
+        <Link href={'/signup'} className="font-semibold  px-4 py-1 text-base bg-blue-600">
         <MenuItem setActive={setActive} active={active} item="Sign Up">
           
         </MenuItem>

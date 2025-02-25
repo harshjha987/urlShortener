@@ -5,7 +5,7 @@ import React, { useState,useEffect } from "react";
 import { AuroraBackground } from "../components/ui/aurora-background"
 import axios from "axios";
 import {QRCodeSVG} from 'qrcode.react';
-// import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 const api_url = process.env.NEXT_PUBLIC_BASE_URL;
 console.log(api_url)
 
@@ -16,23 +16,30 @@ function Page() {
   const [redirectUrl, setRedirectUrl] = useState<{ url: string } | null>(null);
   const [analytics, setAnalytics] = useState<{ totalClicks: number; locations: string[]; referrers: string[] } | null>(null);
   const [isAuthenticated, setAuthenticated] = useState(false);
-  // const router = useRouter()
+  const router = useRouter();
+  const[loading,setLoading]= useState(true)
 
   useEffect(() => {
     const checkAuth = async()=>{
     try {
       
-        const res = await axios.get("http://localhost:8001/auth/check",{withCredentials : true})
-        console.log(res.data)
-        setAuthenticated(res.data.isAuthenticated)
+        const res = await axios.get(`${api_url}/auth/check`,{withCredentials : true})
+        if (res.data.isAuthenticated) {
+          setAuthenticated(true);
+        } else {
+          router.push("/signup");
+        }
       
     } catch (error) {
       setAuthenticated(false)
+      router.push("/signup")
+    }  finally {
+      setLoading(false); // Stop loading after check
     }
   }
   checkAuth()
   
-  }, [])
+  }, [router])
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -48,9 +55,9 @@ function Page() {
 
   const handleShorten = async () => {
     if(!isAuthenticated){
-      // router.push('/')
+      router.push('/signup')
       console.log("User not authenticated")
-      alert("Please login first")
+      
       return
     }
     try {
@@ -108,7 +115,9 @@ function Page() {
       console.error("Error fetching original URL:", error);
     }
   };
-
+  if (loading) {
+    return <div className="min-h-screen flex items-center justify-center">Loading...</div>; // Show loading spinner
+  }
  
 
 

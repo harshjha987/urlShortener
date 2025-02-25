@@ -5,7 +5,7 @@ const { verifyJwt } = require("../middlewares/auth.middlewares");
 
 const router = express.Router();
 
-router.post("/",verifyJwt,handleGenerateNewUrl)
+router.post("/",handleGenerateNewUrl)
 
 router.get("/analytics/:shortId",getAnalytics)
 

@@ -15,7 +15,7 @@ function Page() {
   const [error, setError] = useState("");
   const [redirectUrl, setRedirectUrl] = useState<{ url: string } | null>(null);
   const [analytics, setAnalytics] = useState<{ totalClicks: number; locations: string[]; referrers: string[] } | null>(null);
-  const [isAuthenticated, setAuthenticated] = useState(false);
+  // const [isAuthenticated, setAuthenticated] = useState(false);
   const router = useRouter();
   
   useEffect(() => {
@@ -31,19 +31,13 @@ function Page() {
   }, []);
 
   const handleShorten = async () => {
-    if(!isAuthenticated){
-      router.push('/signup')
-      console.log("User not authenticated")
-      
-      return
-    }
     try {
-      setError("");
+      
 
-      const response = await axios.post<{ shortId: string }>(`${api_url}/url`, {
-        URL: inputUrl, 
-      },{ withCredentials: true });
-
+      const response = await axios.post<{ shortId: string }>("http://localhost:5000/url", {
+        URL: inputUrl
+      });
+console.log(response.data);
       const shortId = response.data?.shortId;
       if (shortId) {
         const shortUrl = `${api_url}/${shortId}`;
@@ -53,8 +47,9 @@ function Page() {
           localStorage.setItem("shortUrl", shortUrl);
         }
 
-        // Fetch analytics and original URL in parallel
-        await Promise.all([fetchAnalytics(shortId), getOriginalUrl(shortId)]);
+       
+        await Promise.allSettled([fetchAnalytics(shortId), getOriginalUrl(shortId)]);
+
       } else {
         setError("Invalid response from server");
       }
@@ -67,7 +62,7 @@ function Page() {
   const fetchAnalytics = async (shortId: string) => {
     try {
       const response = await axios.get<{ totalClicks: number; locations: string[]; referrers: string[] }>(
-        `${api_url}/url/analytics/${shortId}`,{ withCredentials: true }
+        `http://localhost:5000/url/analytics/${shortId}`
       );
       setAnalytics(response.data);
       localStorage.setItem("analytics", JSON.stringify(response.data));

@@ -3,7 +3,7 @@ const urlRoute = require("./routes/url.routes.js")
 
 const userRoute = require("./routes/user.routes.js")
 const app = express();
-const port = 8001;
+const port = 5000;
 const dotenv = require("dotenv");
 const cors = require("cors");
 const requestIp = require("request-ip");
@@ -27,10 +27,10 @@ app.use(cors({
   }));
   
 app.get("/",(req,res)=>{
-    res.send("Server is running");
+    res.send("Server is running....");
 })
 
-app.use('/url',verifyJwt,urlRoute);
+app.use('/url',urlRoute);
 
 app.use("/users",userRoute);
 app.use("/auth",authRoute)
@@ -58,9 +58,7 @@ app.get("/:shortId", async (req, res) => {
         if (!entry) {
             return res.status(404).json({ error: "Short URL not found" });
         }
-        if (req.headers["x-requested-with"] === "XMLHttpRequest") {
-            return res.json({ originalUrl: entry.redirectUrl, shortId });
-        }
+        
         
         
         console.log(entry.redirectUrl)
@@ -74,9 +72,10 @@ app.get("/:shortId", async (req, res) => {
 connectDb()
 .then(()=>{
     app.listen(port,()=>{
-        console.log(`Server is running on port : ${port}`);
+        console.log("MongoDb connected")
+        
     })
-    console.log("MongoDb connected")
+    console.log(`Server is running on port : ${port}`);
 
 })
 .catch(()=>{

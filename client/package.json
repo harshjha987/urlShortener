@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@radix-ui/react-label": "^2.1.2",
+    "@reduxjs/toolkit": "^2.6.1",
     "@tabler/icons-react": "^3.30.0",
     "axios": "^1.7.9",
     "clsx": "^2.1.1",
@@ -24,6 +25,7 @@
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-intersection-observer": "^9.15.1",
+    "react-redux": "^9.2.0",
     "simplex-noise": "^4.0.3",
     "tailwind-merge": "^3.0.2"
   },

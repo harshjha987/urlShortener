@@ -13,6 +13,8 @@ import Link from "next/link";
 import axios,{AxiosError} from "axios";
 import { useRouter } from "next/navigation";
 const api_url = process.env.NEXT_PUBLIC_BASE_URL;
+import { useDispatch } from 'react-redux';
+import { setUser } from '../redux/userSlice';
 
 
 function Page() {
@@ -20,25 +22,26 @@ function Page() {
 const [email,setEmail] = useState("");
 const[password,setPassword] = useState("");
 const[error,setError] = useState("");
+const dispatch = useDispatch();
 
 const router = useRouter();
 
 
-useEffect(()=>{
-    const checkAuth = async()=>{
-        try {
-            const res = await axios.get(`${api_url}/auth/check`,{withCredentials : true})
-            if(res.data.authenticated){
-                router.push("/url")
-            }
-        } catch (error) {
-            console.log("Not authenticated")
-        }
-    }
-    checkAuth()
+// useEffect(()=>{
+//     const checkAuth = async()=>{
+//         try {
+//             const res = await axios.get(`${api_url}/auth/check`,{withCredentials : true})
+//             if(res.data.authenticated){
+//                 router.push("/url")
+//             }
+//         } catch (error) {
+//             console.log("Not authenticated")
+//         }
+//     }
+//     checkAuth()
 
 
-},[router])
+// },[router])
 
 const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
   e.preventDefault();
@@ -52,7 +55,11 @@ const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
       { email: currentEmail, password: currentPassword },
       { withCredentials: true }
     );
-    router.push("/url");
+    if (res.status === 200) {
+      // console.log("Login success:", res.data);
+      dispatch(setUser(res.data.User));
+      router.push("/url");
+    }
   } catch (err: unknown) {
     const error = err as AxiosError<{ error: string }>;
 

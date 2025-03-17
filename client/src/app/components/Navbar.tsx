@@ -8,6 +8,8 @@ import Image from "next/image";
 import { AlignJustify } from 'lucide-react';
 import axios from "axios";
 import { useRouter } from "next/navigation";
+import { useSelector } from 'react-redux';
+import { RootState } from '../redux/store'; 
 const api_url = process.env.NEXT_PUBLIC_BASE_URL;
 type User = {
   _id: string;
@@ -21,28 +23,28 @@ function Navbar({ className }: { className?: string }){
     const [user, setUser] = useState<User | null>(null);
     const [loading, setLoading] = useState(true);
     const router = useRouter()
-    
-      useEffect(()=>{
-        const fetchUser = async()=>{
-          try {
-            const res = await axios.get(`${api_url}/auth/check`, {withCredentials: true})
-            console.log(res.data)
-            if(res.data.authenticated){
-              setUser(res.data.user)
-            }
-          } catch (error) {
-            console.log("User not logged in")
-            console.error("Error fetching user:");
-          }finally{
-            setLoading(false)
-          }
-        }
-        fetchUser();
-      },[])
+    const User = useSelector((state: RootState) => state.user.user);
+      // useEffect(()=>{
+      //   const fetchUser = async()=>{
+      //     try {
+      //       const res = await axios.get(`${api_url}/auth/check`, {withCredentials: true})
+      //       console.log("Auth respnse" ,res.data)
+      //       if(res.data.authenticated){
+      //         setUser(res.data.user)
+      //       }
+      //     } catch (error) {
+      //       console.log("User not logged in")
+      //       console.error("Error fetching user:");
+      //     }finally{
+      //       setLoading(false)
+      //     }
+      //   }
+      //   fetchUser();
+      // },[])
       
-      if (loading) {
-        return null; // Wait for loading to finish
-      }
+      // if (loading) {
+      //   return null; // Wait for loading to finish
+      // }
     return (
         <div
           className={cn("fixed top-6 inset-x-0 max-w-5xl mx-auto z-50   justify-between ", className)}
@@ -73,9 +75,9 @@ function Navbar({ className }: { className?: string }){
         </MenuItem>
         </div>
         <div className=" hidden md:flex items-center">
-        {user ? (
+        {User ? (
           <button onClick={() => router.push('/profile')} className="px-4 py-2 bg-blue-600 rounded">
-            {user.username}'s Profile
+            {User.username}'s Profile
           </button>
         ) : (
           <button onClick={() => router.push('/signup')} className="px-4 py-2 bg-green-600 rounded">
@@ -98,15 +100,15 @@ function Navbar({ className }: { className?: string }){
           {/* <Link href="/" className="rounded-lg px-4 py-2 bg-blue-600 text-white">
             <MenuItem setActive={setActive} active={active} item="Sign Up" />
           </Link> */}
-          {user ? (
+          {/* {User ? (
           <button onClick={() => router.push('/profile')} className="px-4 py-2 bg-red-600 rounded">
-            {user.username}'s Profile
+            {User.username}'s Profile
           </button>
         ) : (
           <button onClick={() => router.push('/signup')} className="px-4 py-2 bg-green-600 rounded">
             Signup
           </button>
-        )}
+        )} */}
         </div>
       )}
 

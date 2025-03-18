@@ -59,10 +59,13 @@ app.get("/:shortId", async (req, res) => {
             return res.status(404).json({ error: "Short URL not found" });
         }
         
-        
+        if (req.headers["x-requested-with"] === "XMLHttpRequest") {
+            return res.json({ originalUrl: entry.redirectUrl, shortId });
+        }
         
         console.log(entry.redirectUrl)
-        res.redirect(entry.redirectUrl);
+        res.redirect(entry?.redirectUrl);
+        
     } catch (error) {
         console.error("Error in redirect:", error);
         res.status(500).json({ error: "Internal Server Error" });

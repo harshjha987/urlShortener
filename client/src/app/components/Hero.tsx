@@ -7,8 +7,8 @@ import { Button } from "./ui/moving-border";
 import Link from "next/link";
 function Hero() {
   return (
-    <div className="h-auto md:h-[40rem] w-full rounded-md flex flex-col 
-    items-center justify-center relative overflow-hidden mx-auto py-10 md:py-0">
+    <div className=" md:h-[40rem] w-full rounded-md flex flex-col 
+    items-center justify-center relative overflow-hidden mx-auto py-0 md:py-0">
     <HeroHighlight>
      
       <motion.h1

@@ -63,7 +63,7 @@ export function FeaturesSectionDemo() {
   ];
   return (
     
-    <div className="max-w-7xl mx-auto text-center py-10">
+    <div className="max-w-7xl mx-auto text-center py-3 md:py-10">
         
   {/* Title */}
   <h2 className="text-3xl font-bold text-gray-200 mb-6 underline"> Key Features</h2>

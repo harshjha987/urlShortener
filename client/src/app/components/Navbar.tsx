@@ -5,7 +5,7 @@ import { cn } from "@/lib/utils";
 import Link from "next/link";
 import logo from "../images/logo-url.png"
 import Image from "next/image";
-import { AlignJustify } from 'lucide-react';
+import { AlignJustify, X } from 'lucide-react';
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import { useSelector } from 'react-redux';
@@ -55,7 +55,7 @@ function Navbar({ className }: { className?: string }){
                 <div className="flex font-bold ml-5 items-center">
                
                     <Image src = {logo} alt="/logo" className="h-6 w-6 mr-2"/>
-                   <p> Shortrix</p> 
+                   <p className="py-1"> Shortrix</p> 
                   
                 </div>
                 </Link>
@@ -80,18 +80,18 @@ function Navbar({ className }: { className?: string }){
             {User.username}'s Profile
           </button>
         ) : (
-          <button onClick={() => router.push('/signup')} className="px-4 py-2 bg-green-600 rounded">
+          <button onClick={() => router.push('/signup')} className="px-4 py-1 bg-green-600 rounded">
             Signup
           </button>
         )}
         
         </div>
-        <button onClick={() => setOpen(!open)} className="md:hidden">
-          <AlignJustify  />
-        </button>
+        <button onClick={() => setOpen(!open)} className="md:hidden z-50 relative">
+        {open ? <X /> : <AlignJustify />} {/* Toggle between hamburger and X */}
+      </button>
       
         {open && (
-        <div className="md:hidden flex flex-col space-y-4 mt-4">
+        <div className="absolute top-0  right-8 -mt-[2px] bg-black shadow-lg flex flex-col p-4 rounded md:hidden space-y-4">
           <Link href="/">
             <MenuItem setActive={setActive} active={active} item="Home" />
           </Link>
@@ -100,7 +100,7 @@ function Navbar({ className }: { className?: string }){
           {/* <Link href="/" className="rounded-lg px-4 py-2 bg-blue-600 text-white">
             <MenuItem setActive={setActive} active={active} item="Sign Up" />
           </Link> */}
-          {/* {User ? (
+          {User ? (
           <button onClick={() => router.push('/profile')} className="px-4 py-2 bg-red-600 rounded">
             {User.username}'s Profile
           </button>
@@ -108,7 +108,7 @@ function Navbar({ className }: { className?: string }){
           <button onClick={() => router.push('/signup')} className="px-4 py-2 bg-green-600 rounded">
             Signup
           </button>
-        )} */}
+        )}
         </div>
       )}
 

@@ -18,6 +18,7 @@ function Page() {
   // const [isAuthenticated, setAuthenticated] = useState(false);
   const router = useRouter();
   
+  
   useEffect(() => {
     if (typeof window !== "undefined") {
       const savedShortUrl = localStorage.getItem("shortUrl");
@@ -92,7 +93,9 @@ console.log(response.data);
 
 
   return (
+   
     <AuroraBackground>
+      <div className="overflow-y-auto max-h-full relative mt-24 p-8 w-full  flex flex-col">
       <motion.div
         initial={{ opacity: 0.0, y: 40 }}
         whileInView={{ opacity: 1, y: 0 }}
@@ -101,13 +104,13 @@ console.log(response.data);
           duration: 0.8,
           ease: "easeInOut",
         }}
-        className="relative flex flex-col gap-4 items-center justify-center px-4"
+        className="relative flex flex-col gap-4 items-center justify-center px-4 "
       >
-        <div className="text-xl md:text-2xl font-bold dark:text-white text-center">
-            Instant Link Shortner
-            <p>Enter your URL.</p>
+        <div className="text-xl md:text-2xl font-bold dark:text-white text-center ">
+            
+            {/* <p className="text-rose-600 mb-2 text-left">Enter your URL.</p> */}
           <input type="text" value={inputUrl} placeholder="Enter your URL"
-          onChange={(e)=> setInputUrl(e.target.value)} className="text-black"/>
+          onChange={(e)=> setInputUrl(e.target.value)} className="text-black rounded p-2"/>
         </div>
         
         <button className="bg-black dark:bg-white rounded-full w-fit text-white dark:text-black px-4 py-2"
@@ -141,7 +144,9 @@ console.log(response.data);
 )}
 
       </motion.div>
+      </div>
     </AuroraBackground>
+    
   );
 }
 export default Page

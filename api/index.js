@@ -20,7 +20,7 @@ const { verifyJwt } = require("./middlewares/auth.middleware.js");
 
 
 app.use(cors({
-    origin: "http://localhost:3000",
+    origin:["http://localhost:3000","https://shortrix.vercel.app" ],
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"], // ✅ All necessary methods
     credentials: true // ✅ Allows cookies & authentication headers
 }));

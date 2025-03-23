@@ -79,4 +79,4 @@ const refreshAccessToken = async(req,res)=>{
 
 }
 
-module.exports = {generateAccessToken,generateRefreshToken,generateAccessAndRefreshToken}
+module.exports = {generateAccessToken,generateRefreshToken,generateAccessAndRefreshToken,refreshAccessToken}

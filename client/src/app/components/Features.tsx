@@ -10,8 +10,11 @@ import {
   IconRouteAltLeft,
   IconTerminal2,
 } from "@tabler/icons-react";
+import { useRef } from "react";
 
 export function FeaturesSectionDemo() {
+
+ 
   const features = [
     {
       title: "Instant Link Shortening",

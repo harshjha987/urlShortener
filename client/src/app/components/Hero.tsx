@@ -1,12 +1,42 @@
 "use client";
-import React from "react";
+import React,{useEffect,useState} from "react";
 import { motion } from "framer-motion";
 import { Highlight,HeroHighlight } from "./ui/hero-highlight";
+import { useRouter } from "next/navigation";
+import axios,{AxiosError} from "axios";
+const api_url = process.env.NEXT_PUBLIC_BASE_URL;
 
 import { Button } from "./ui/moving-border";
 import Link from "next/link";
 function Hero() {
-  return (
+
+  const[loading,setLoading] = useState(false)
+  const[isAuthenticated,setAuthenticated] = useState(false)
+  const router = useRouter()
+  useEffect(() => {
+    const checkAuth = async () => {
+      try {
+        const res = await axios.get("http://localhost:5000/users/auth/check", {
+          withCredentials: true, // ✅ Ensures cookies are sent
+        });
+  
+        if (res.data.authenticated) {
+          setAuthenticated(true);
+        } else {
+          setAuthenticated(false);
+        }
+      } catch (error) {
+        console.log("Not authenticated", error);
+        setAuthenticated(false);
+      } finally {
+        setLoading(false);
+      }
+    };
+  
+    checkAuth();
+  }, []);
+  
+    return(
     <div className=" md:h-[40rem] w-full rounded-md flex flex-col 
     items-center justify-center relative overflow-hidden mx-auto py-0 md:py-0">
     <HeroHighlight>
@@ -33,7 +63,7 @@ function Hero() {
         </Highlight>
       </motion.h1>
       <div className="z-10 text-center mt-6">
-        <Link href= "/signup">
+        <Link href={isAuthenticated ? "/url" : "/signup"}>
       <Button
     borderRadius="1.75rem"
     className="bg-white dark:bg-slate-900 text-black dark:text-white border-neutral-200

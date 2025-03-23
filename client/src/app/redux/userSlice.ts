@@ -1,63 +1,55 @@
-import { createSlice, PayloadAction, createAsyncThunk } from "@reduxjs/toolkit";
-import axios from "axios";
-
-// Async action to fetch user details
-export const fetchUser = createAsyncThunk("user/fetchUser", async () => {
-  try {
-    const response = await axios.get("http://localhost:5000/auth/check", {
-      withCredentials: true,
-    });
-    return response.data.user; // Assuming the response contains { user: { ... } }
-  } catch (error) {
-    throw new Error("Failed to fetch user");
-  }
-});
-
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import axios from 'axios';
+const api_url = process.env.NEXT_PUBLIC_BASE_URL;
 interface User {
   _id: string;
   username: string;
   email: string;
-  urls?: string[]; // ✅ Ensure 'urls' exists
 }
-
-
-
 
 interface UserState {
   user: User | null;
-  status: "idle" | "loading" | "succeeded" | "failed";
+  userUrls: { shortId: string; originalUrl: string; visitedHistory: any[] }[];
 }
 
 const initialState: UserState = {
   user: null,
-  status: "idle",
+  userUrls: [],
 };
 
+// Fetch user profile (called after login)
+export const fetchUser = createAsyncThunk('user/fetchUser', async () => {
+  const response = await axios.get("http://localhost:5000/users/auth/check", { withCredentials: true });
+  return response.data.user;
+});
+
+// // Fetch user's shortened URLs
+// export const fetchUserUrls = createAsyncThunk('user/fetchUserUrls', async () => {
+//   const response = await axios.get(`${api_url}/users/urls`, { withCredentials: true });
+//   return response.data.urls;
+// });
+
 const userSlice = createSlice({
-  name: "user",
+  name: 'user',
   initialState,
   reducers: {
-    setUser: (state, action: PayloadAction<User | null>) => {
+    setUser: (state, action) => {
       state.user = action.payload;
     },
     clearUser: (state) => {
       state.user = null;
+      state.userUrls = [];
     },
   },
-  extraReducers: (builder) => {
-    builder
-      .addCase(fetchUser.pending, (state) => {
-        state.status = "loading";
-      })
-      .addCase(fetchUser.fulfilled, (state, action) => {
-        state.status = "succeeded";
-        state.user = action.payload;
-      })
-      .addCase(fetchUser.rejected, (state) => {
-        state.status = "failed";
-        state.user = null;
-      });
-  },
+  // extraReducers: (builder) => {
+  //   builder
+  //     .addCase(fetchUser.fulfilled, (state, action) => {
+  //       state.user = action.payload;
+  //     })
+  //     .addCase(fetchUserUrls.fulfilled, (state, action) => {
+  //       state.userUrls = action.payload;
+  //     });
+  // },
 });
 
 export const { setUser, clearUser } = userSlice.actions;

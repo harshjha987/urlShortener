@@ -11,11 +11,14 @@ import {
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import axios,{AxiosError} from "axios";
+import { useAppDispatch } from '../redux/store';
+import { fetchUser } from '../redux/userSlice';
 
 const api_url = process.env.NEXT_PUBLIC_BASE_URL;
  function Page() {
 
   
+  const dispatch = useAppDispatch()
 
 interface SignupData {
   username: string;
@@ -59,8 +62,9 @@ interface SignupData {
     e.preventDefault();
     setError(null)
     try {
-      const res = await axios.post(`${api_url}/users/signup`,formData)
+      const res = await axios.post("http://localhost:5000/users/signup",formData)
       if(res.status >= 200 && res.status < 300){
+        dispatch(fetchUser());
         router.push("/login")
       }
     } catch (err : unknown) {

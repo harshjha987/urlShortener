@@ -9,7 +9,13 @@ const urlSchema = new mongoose.Schema({
             ip: { type: String },
             referrer: { type: String }
         }
-    ]
+    ],
+    urls: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "URL", // Reference the URL model
+    },
+  ],
 }, { timestamps: true });
 
 

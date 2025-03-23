@@ -8,14 +8,19 @@ import Image from "next/image";
 import { AlignJustify, X } from 'lucide-react';
 import axios from "axios";
 import { useRouter } from "next/navigation";
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../redux/store'; 
+import { clearUser } from '../redux/userSlice';
 const api_url = process.env.NEXT_PUBLIC_BASE_URL;
 type User = {
   _id: string;
   username: string;
   email: string;
 };
+
+interface LogoutResponse {
+  message: string;
+}
 
 function Navbar({ className }: { className?: string }){
     const [active, setActive] = useState<string | null>(null);
@@ -24,6 +29,22 @@ function Navbar({ className }: { className?: string }){
     const [loading, setLoading] = useState(true);
     const router = useRouter()
     const User = useSelector((state: RootState) => state.user.user);
+    const dispatch = useDispatch()
+   
+    const handleLogout= async ()=>{
+      
+      try {
+        const response = await axios.post<LogoutResponse>("http://localhost:5000/users/logout",{}, { withCredentials: true
+})
+        if(response.status === 200 ){
+          dispatch(clearUser());
+          router.push("/login")
+        }
+        
+      } catch (error) {
+        console.error("Logout failed:", error);
+      }
+    }
       // useEffect(()=>{
       //   const fetchUser = async()=>{
       //     try {
@@ -76,9 +97,14 @@ function Navbar({ className }: { className?: string }){
         </div>
         <div className=" hidden md:flex items-center">
         {User ? (
+          <div className="space-x-2">
           <button onClick={() => router.push('/profile')} className="px-4 py-2 bg-blue-600 rounded">
             {User.username}'s Profile
           </button>
+          <button onClick = {handleLogout}className="px-4 py-2 rounded bg-red-600">
+            Log Out
+          </button>
+          </div>
         ) : (
           <button onClick={() => router.push('/signup')} className="px-4 py-1 bg-green-600 rounded">
             Signup

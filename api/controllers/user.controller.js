@@ -1,5 +1,6 @@
 const { hashPassword,validatePassword } = require("../auth/passwordUtils");
 const { generateAccessAndRefreshToken } = require("../auth/tokenUtils");
+const { URL } = require("../models/url.models");
 const { User } = require("../models/user.models");
 
 
@@ -61,8 +62,11 @@ const userSignin = async(req,res)=>{
             const loggedinUser = await User.findById(user._id).select("-password -refreshToken")
             const options = {
                 httpOnly : true, //only server can modify
-                secure : true
+                secure: process.env.NODE_ENV === "production", 
+                sameSite: process.env.NODE_ENV === "production" ? "None" : "Lax"
             }
+            console.log("Generated Access Token:", accessToken);
+console.log("Generated Refresh Token:", refreshToken);
             return res
             .status(200)
             .cookie("accessToken",accessToken,options)
@@ -75,7 +79,11 @@ const userSignin = async(req,res)=>{
 }
 
 const userLogOut = async(req,res)=>{
+    
     console.log(req.user)
+    if (!req.user) {
+        return res.status(401).json({ error: "Unauthorized request - User not found" });
+    }
     await User.findByIdAndUpdate(
         req.user._id,
         {
@@ -90,8 +98,11 @@ const userLogOut = async(req,res)=>{
    
     const options = {
         httpOnly : true,
-        secure : true
+        secure: process.env.NODE_ENV === "production", 
+       sameSite: process.env.NODE_ENV === "production" ? "None" : "Lax"
     }
+    
+
     return res.status(200)
     .clearCookie("accessToken",options)
     .clearCookie("refreshToken",options)
@@ -115,4 +126,15 @@ const changePassword = async(req,res)=>{
     .json({message: "Password changed succesfully"})
 }
 
-module.exports = {userSignup , userSignin,userLogOut,changePassword};
+
+const userUrls = async(req,res)=>{
+    try {
+        const userId = req.user._id;
+        const urls = await URL.find({createdBy : userId}).sort({ createdAt: -1 });
+        res.status(200).json({success : true, urls})
+    } catch (error) {
+        console.error("Error fetching user URLs:", error);
+        res.status(500).json({ success: false, message: "Internal Server Error" });
+    }
+}
+module.exports = {userSignup , userSignin,userLogOut,changePassword,userUrls};

@@ -7,6 +7,9 @@ import axios from "axios";
 import {QRCodeSVG} from 'qrcode.react';
 import { useRouter } from "next/navigation";
 const api_url = process.env.NEXT_PUBLIC_BASE_URL;
+import { useSelector, useDispatch } from "react-redux";
+import { fetchUser } from "../redux/userSlice"
+import { RootState, AppDispatch } from "@/app/redux/store";
 console.log(api_url)
 
 function Page() {
@@ -17,8 +20,17 @@ function Page() {
   const [analytics, setAnalytics] = useState<{ totalClicks: number; locations: string[]; referrers: string[] } | null>(null);
   // const [isAuthenticated, setAuthenticated] = useState(false);
   const router = useRouter();
+  const dispatch = useDispatch<AppDispatch>();
+  const { user } = useSelector((state: RootState) => state.user);
   
-  
+  useEffect(() => {
+    dispatch(fetchUser());
+  }, [dispatch]);
+  useEffect(() => {
+    if (user === null) {
+      router.push("/login"); // Redirect unauthenticated users to login page
+    }
+  }, [user, router]);
   useEffect(() => {
     if (typeof window !== "undefined") {
       const savedShortUrl = localStorage.getItem("shortUrl");
@@ -35,7 +47,7 @@ function Page() {
     try {
       
 
-      const response = await axios.post<{ shortId: string }>(`${api_url}/url`, {
+      const response = await axios.post<{ shortId: string }>("http://localhost:5000/url", {
         URL: inputUrl
       });
 console.log(response.data);
@@ -63,7 +75,7 @@ console.log(response.data);
   const fetchAnalytics = async (shortId: string) => {
     try {
       const response = await axios.get<{ totalClicks: number; locations: string[]; referrers: string[] }>(
-        `${api_url}/url/analytics/${shortId}`
+        `http://localhost:5000/url/analytics/${shortId}`
       );
       setAnalytics(response.data);
       localStorage.setItem("analytics", JSON.stringify(response.data));
@@ -75,7 +87,7 @@ console.log(response.data);
   const getOriginalUrl = async (shortId: string) => {
     try {
       const response = await axios.get<{ originalUrl: string }>(
-        `${api_url}/${shortId}`,
+        `http://localhost:5000/${shortId}`,
         { headers: { "X-Requested-With": "XMLHttpRequest" } }
       );
 
@@ -146,6 +158,7 @@ console.log(response.data);
       </motion.div>
       </div>
     </AuroraBackground>
+   
     
   );
 }

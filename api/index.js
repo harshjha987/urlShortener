@@ -9,23 +9,25 @@ const cors = require("cors");
 const requestIp = require("request-ip");
 const {URL} = require("./models/url.models")
 
-const authRoute = require("./routes/auth.routes.js")
-const cookieParser = require('cookie-parser')
 
+const cookieParser = require("cookie-parser");
 dotenv.config({
     path : './.env'
 })
 const {connectDb} = require("./connectDb");
-const { verifyJwt } = require("./middlewares/auth.middlewares");
+const { verifyJwt } = require("./middlewares/auth.middleware.js");
 
-app.use(express.json());
-app.use(cookieParser())
+
+
 app.use(cors({
-    origin: ["http://localhost:3000", "https://shortrix.vercel.app"], 
-    methods: ["POST", "GET"],
-    credentials: true
-  }));
-  
+    origin: "http://localhost:3000",
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"], // ✅ All necessary methods
+    credentials: true // ✅ Allows cookies & authentication headers
+}));
+  app.use(cookieParser());
+  app.use(express.json());
+ 
+
 app.get("/",(req,res)=>{
     res.send("Server is running....");
 })
@@ -33,7 +35,8 @@ app.get("/",(req,res)=>{
 app.use('/url',urlRoute);
 
 app.use("/users",userRoute);
-app.use("/auth",authRoute)
+
+
 
 app.get("/:shortId", async (req, res) => {
     try {
@@ -84,6 +87,3 @@ connectDb()
 .catch(()=>{
     console.log("Error occured");
 })
-// app.listen(port,()=>{
-//     console.log(`Server is running on port : ${port}`);
-// })

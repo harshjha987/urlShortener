@@ -17,6 +17,12 @@ const userSchema = new mongoose.Schema({
         required : [true,'password is required']
 
     },
+    urls: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "URL", // Reference the URL model
+    },
+    ],
     refreshToken : {
         type : String
     }

@@ -16,7 +16,7 @@ function Hero() {
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        const res = await axios.get("http://localhost:5000/users/auth/check", {
+        const res = await axios.get(`${api_url}/users/auth/check`, {
           withCredentials: true, // ✅ Ensures cookies are sent
         });
   

@@ -1,7 +1,7 @@
 "use client";
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchUser, fetchUserUrls } from "../redux/userSlice"
+import { fetchUser } from "../redux/userSlice"
 import { RootState, AppDispatch } from "@/app/redux/store";
 
 const Profile = () => {
@@ -10,7 +10,7 @@ const Profile = () => {
 
   useEffect(() => {
     dispatch(fetchUser());
-    dispatch(fetchUserUrls());
+    // dispatch(fetchUserUrls());
   }, [dispatch]);
 
   return (

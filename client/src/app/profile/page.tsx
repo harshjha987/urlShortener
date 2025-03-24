@@ -3,6 +3,7 @@ import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchUser } from "../redux/userSlice"
 import { RootState, AppDispatch } from "@/app/redux/store";
+const api_url = process.env.NEXT_PUBLIC_BASE_URL;
 
 const Profile = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -27,8 +28,8 @@ const Profile = () => {
                 <li key={index} className="border p-3 my-2 rounded-lg">
                   <p>
                     <strong>Short Link:</strong>{" "}
-                    <a href={`http://localhost:5000/${url.shortId}`} target="_blank" className="text-blue-500 underline">
-                      http://localhost:5000/{url.shortId}
+                    <a href={`${api_url}/${url.shortId}`} target="_blank" className="text-blue-500 underline">
+                    `${api_url}/{url.shortId}`
                     </a>
                   </p>
                   <p>

@@ -48,8 +48,11 @@ function Page() {
       
 
       const response = await axios.post<{ shortId: string }>(`${api_url}/url`, {
-        URL: inputUrl
-      });
+        URL: inputUrl} ,
+        {
+          withCredentials: true, // ✅ This ensures cookies are sent
+        }
+      );
 console.log(response.data);
       const shortId = response.data?.shortId;
       if (shortId) {

@@ -15,7 +15,7 @@ const handleGenerateNewUrl = async (req, res) => {
             shortId: shortId,
             redirectUrl: body.URL,
             visitedHistory: [],
-            userId
+            createdBy: userId,
         });
         await User.findByIdAndUpdate(userId, { $push: { urls: newUrl._id } });
 

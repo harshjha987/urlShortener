@@ -10,12 +10,7 @@ const urlSchema = new mongoose.Schema({
             referrer: { type: String }
         }
     ],
-    urls: [
-    {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "URL", // Reference the URL model
-    },
-  ],
+    createdBy: { type: mongoose.Schema.Types.ObjectId, ref: "User" }
 }, { timestamps: true });
 
 

@@ -10,16 +10,20 @@ interface User {
 interface UserState {
   user: User | null;
   userUrls: { shortId: string; originalUrl: string; visitedHistory: any[] }[];
+  isLoading : boolean;
+  error : string | null;
 }
 
 const initialState: UserState = {
   user: null,
   userUrls: [],
+  isLoading: false,  
+  error: null,       
 };
 
 // Fetch user profile (called after login)
 export const fetchUser = createAsyncThunk('user/fetchUser', async () => {
-  const response = await axios.get(`${api_url}/users/auth/check`, { withCredentials: true });
+  const response = await axios.get("http://localhost:5000/users/auth/check", { withCredentials: true });
   return response.data.user;
 });
 

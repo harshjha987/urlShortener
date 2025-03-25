@@ -62,7 +62,7 @@ interface SignupData {
     e.preventDefault();
     setError(null)
     try {
-      const res = await axios.post(`${api_url}/users/signup`,formData)
+      const res = await axios.post("http://localhost:5000/users/signup",formData)
       if(res.status >= 200 && res.status < 300){
         dispatch(fetchUser());
         router.push("/login")

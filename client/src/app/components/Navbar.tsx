@@ -34,7 +34,7 @@ function Navbar({ className }: { className?: string }){
     const handleLogout= async ()=>{
       
       try {
-        const response = await axios.post<LogoutResponse>(`${api_url}/users/logout`,{}, { withCredentials: true
+        const response = await axios.post<LogoutResponse>("http://localhost:5000/users/logout",{}, { withCredentials: true
 })
         if(response.status === 200 ){
           dispatch(clearUser());

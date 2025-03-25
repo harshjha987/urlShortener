@@ -47,7 +47,7 @@ function Page() {
     try {
       
 
-      const response = await axios.post<{ shortId: string }>(`${api_url}/url`, {
+      const response = await axios.post<{ shortId: string }>("http://localhost:5000/url", {
         URL: inputUrl} ,
         {
           withCredentials: true, // ✅ This ensures cookies are sent
@@ -78,7 +78,7 @@ console.log(response.data);
   const fetchAnalytics = async (shortId: string) => {
     try {
       const response = await axios.get<{ totalClicks: number; locations: string[]; referrers: string[] }>(
-        `${api_url}/url/analytics/${shortId}`
+        `http://localhost:5000/url/analytics/${shortId}`
       );
       setAnalytics(response.data);
       localStorage.setItem("analytics", JSON.stringify(response.data));
@@ -90,7 +90,7 @@ console.log(response.data);
   const getOriginalUrl = async (shortId: string) => {
     try {
       const response = await axios.get<{ originalUrl: string }>(
-        `${api_url}/${shortId}`,
+        `http://localhost:5000/${shortId}`,
         { headers: { "X-Requested-With": "XMLHttpRequest" } }
       );
 

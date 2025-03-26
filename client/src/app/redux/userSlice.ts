@@ -19,7 +19,7 @@ const initialState: UserState = {
 
 // Fetch user profile (called after login)
 export const fetchUser = createAsyncThunk('user/fetchUser', async () => {
-  const response = await axios.get(`${api_url}/users/auth/check`, { withCredentials: true });
+  const response = await axios.get("http://localhost:5000/users/auth/check", { withCredentials: true });
   return response.data.user;
 });
 

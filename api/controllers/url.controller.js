@@ -11,14 +11,18 @@ const handleGenerateNewUrl = async (req, res) => {
         if (!body.URL) return res.status(400).json({ error: "Url is required" });
 
         const shortId = shortid();
+        const shortUrl = `https://shortrix.onrender.com/${shortId}`
         const newUrl = await URL.create({
             shortId: shortId,
+            shortUrl : shortUrl,
             redirectUrl: body.URL,
             visitedHistory: [],
             createdBy: userId,
+            
         });
-        await User.findByIdAndUpdate(userId, { $push: { urls: newUrl._id } });
-
+         
+        await User.findByIdAndUpdate(userId, { $push: { urls: newUrl._id },shortUrl });
+       
         console.log("Generated Short ID:", shortId);
 
         return res.json({ shortId }); // ✅ Return only shortId, not shortUrl

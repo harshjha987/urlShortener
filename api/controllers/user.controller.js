@@ -130,7 +130,8 @@ const changePassword = async(req,res)=>{
 const userUrls = async(req,res)=>{
     try {
         const userId = req.user._id;
-        const urls = await URL.find({createdBy : userId}).sort({ createdAt: -1 });
+        const urls = await URL.find({createdBy : userId}).sort({ createdAt: -1 })
+        .select("shortUrl redirectUrl visitedHistory -_id");
         res.status(200).json({success : true, urls})
     } catch (error) {
         console.error("Error fetching user URLs:", error);

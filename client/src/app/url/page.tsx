@@ -38,6 +38,8 @@ function Page() {
 
   const [urlHistory, setUrlHistory] = useState<ApiResponse | null>(null);
   
+  const [showUrls, setShowUrls] = useState(false);
+  
   useEffect(() => {
     dispatch(fetchUser());
   }, [dispatch]);
@@ -93,7 +95,7 @@ console.log(response.data);
   const fetchAnalytics = async (shortId: string) => {
     try {
       const response = await axios.get<{ totalClicks: number; locations: string[]; referrers: string[] }>(
-        `${api_url}/url/analytics/${shortId}`
+        `http://localhost:5000/url/analytics/${shortId}`
       );
       setAnalytics(response.data);
       localStorage.setItem("analytics", JSON.stringify(response.data));
@@ -105,7 +107,7 @@ console.log(response.data);
   const getOriginalUrl = async (shortId: string) => {
     try {
       const response = await axios.get<{ originalUrl: string }>(
-        `${api_url}/${shortId}`,
+        `http://localhost:5000/${shortId}`,
         { headers: { "X-Requested-With": "XMLHttpRequest" } }
       );
 
@@ -158,19 +160,33 @@ console.log(response.data);
           Shorten now
         </button>
         <button className="bg-black dark:bg-white rounded-full w-fit text-white dark:text-black px-4 py-2"
-        onClick={getUrls}>
+        onClick={() => {
+          try {
+            getUrls();
+            setShowUrls(true);
+          } catch (err) {
+            setError("Failed to fetch URLs. Please try again.");
+          }
+        }}>
           See your shortened Urls
         </button>
-        {urlHistory && urlHistory.urls && urlHistory.urls.length > 0 && (
-  <div className="mt-4 p-4 bg-white shadow-md rounded">
+        { showUrls && urlHistory && urlHistory.urls && urlHistory.urls.length > 0 && (
+  <div className="mt-4 p-4 bg-white shadow-md rounded relative">
     <h2 className="text-xl font-bold mb-2">Your Shortened URLs</h2>
+    <button 
+                className="absolute top-2 right-2 bg-red-500 text-white px-3 py-1 rounded-full hover:bg-red-600 transition"
+                onClick={() => setShowUrls(false)}
+              >
+                ×
+              </button>
     
     <ul className="space-y-3">
       {urlHistory.urls.map((url, index) => (
         <li key={index} className="p-3 bg-gray-100 rounded shadow">
           <p><strong>Short URL:</strong> <a href={url.shortUrl} target="_blank" className="text-blue-500">{url.shortUrl}</a></p>
-          <p><strong>Redirect URL:</strong> <a href={url.redirectUrl} target="_blank" className="text-blue-500">{url.redirectUrl}</a></p>
+          <p><strong>Original URL:</strong> <a href={url.redirectUrl} target="_blank" className="text-blue-500">{url.redirectUrl}</a></p>
           <p><strong>Visits:</strong> {url.visitedHistory.length}</p>
+          <QRCodeSVG value={shortUrl} className="mt-2" />
         </li>
       ))}
     </ul>

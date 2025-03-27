@@ -163,7 +163,7 @@ console.log(response.data);
         }}>
            See your shortened Urls
          </button>
-         {showUrls && urlHistory && urlHistory.urls && urlHistory.urls.length > 0 && (
+         {showUrls && urlHistory && urlHistory.urls && urlHistory.urls.length > 0 ? (
    <div className="mt-4 p-4 bg-white shadow-md rounded relative">
      <h2 className="text-xl font-bold mb-2">Your Shortened URLs</h2>
      <button 
@@ -183,7 +183,9 @@ console.log(response.data);
        ))}
      </ul>
    </div>
- )}
+ ): showUrls && (
+  <p className="mt-4 text-gray-500 dark:text-gray-400">No shortened URLs found.</p>
+)}
         {error && <p className="text-red-300 mt-2">{error}</p>}
         {shortUrl && (
         <div className="mt-4 p-4 bg-white shadow-md rounded">

@@ -10,7 +10,17 @@ const api_url = process.env.NEXT_PUBLIC_BASE_URL;
 import { useSelector, useDispatch } from "react-redux";
 import { fetchUser } from "../redux/userSlice"
 import { RootState, AppDispatch } from "@/app/redux/store";
-console.log(api_url)
+
+interface UrlData {
+  shortUrl: string;
+  redirectUrl: string;
+  visitedHistory: { timestamp: number }[];
+}
+
+interface ApiResponse {
+  success: boolean;
+  urls: UrlData[];
+}
 
 function Page() {
   const [inputUrl, setInputUrl] = useState("");
@@ -22,6 +32,7 @@ function Page() {
   const router = useRouter();
   const dispatch = useDispatch<AppDispatch>();
   const { user } = useSelector((state: RootState) => state.user);
+  const [urlHistory, setUrlHistory] = useState<ApiResponse | null>(null);
   
   useEffect(() => {
     dispatch(fetchUser());
@@ -103,7 +114,15 @@ console.log(response.data);
       console.error("Error fetching original URL:", error);
     }
   };
-  
+  const getUrls = async()=>{
+    try {
+        const res = await axios.get<ApiResponse>(`${api_url}/users/urls`,{withCredentials : true})
+        setUrlHistory(res.data);
+
+    } catch (error) {
+      console.error("Error fetching url history",error)
+    }
+  }
  
 
 
@@ -132,6 +151,25 @@ console.log(response.data);
         onClick={handleShorten}>
           Shorten now
         </button>
+        <button className="bg-black dark:bg-white rounded-full w-fit text-white dark:text-black px-4 py-2"
+         onClick={getUrls}>
+           See your shortened Urls
+         </button>
+         {urlHistory && urlHistory.urls && urlHistory.urls.length > 0 && (
+   <div className="mt-4 p-4 bg-white shadow-md rounded">
+     <h2 className="text-xl font-bold mb-2">Your Shortened URLs</h2>
+     
+     <ul className="space-y-3">
+       {urlHistory.urls.map((url, index) => (
+         <li key={index} className="p-3 bg-gray-100 rounded shadow">
+           <p><strong>Short URL:</strong> <a href={url.shortUrl} target="_blank" className="text-blue-500">{url.shortUrl}</a></p>
+           <p><strong>Redirect URL:</strong> <a href={url.redirectUrl} target="_blank" className="text-blue-500">{url.redirectUrl}</a></p>
+           <p><strong>Visits:</strong> {url.visitedHistory.length}</p>
+         </li>
+       ))}
+     </ul>
+   </div>
+ )}
         {error && <p className="text-red-300 mt-2">{error}</p>}
         {shortUrl && (
         <div className="mt-4 p-4 bg-white shadow-md rounded">
